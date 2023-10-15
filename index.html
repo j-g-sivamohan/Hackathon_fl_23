@@ -4,6 +4,7 @@
 	<title>Campus Map</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="bower_components/d3-tip/index.js"></script>
 </head>
 <body>
     <div id="user-query">
@@ -14,7 +15,7 @@
                     <option value="M">Monday</option>
                     <option value="T">Tuesday</option>
                     <option value="W">Wednesday</option>
-                    <option value="R">Thursday</option>
+                    <option value="H">Thursday</option>
                     <option value="F">Friday</option>
                 </select>
             </div>
@@ -27,6 +28,7 @@
         </div>
     </div>
     <div id="campus-map" class="svg-container"></div>
+    <div id = "tooltip" class = "view"></div>
 
 
     <script src="js/jquery.min.js"></script>
