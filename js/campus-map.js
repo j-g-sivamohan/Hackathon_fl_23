@@ -7,23 +7,32 @@ var parkingGroup = svg.append("g").attr("class", "parking")
 var otherBuildingsGroup = svg.append("g").attr("class", "otherBuildings")
 var classroomBuildingGroup = svg.append("g").attr("class", "classroomBuildings")
 
-function tooltip_render(tooltip_data) {
-    console.log("tooltiip")
-    var text = "<h2 class = class-text" + tooltip_data.state + "</h2>";
-    text += "Electoral Votes: " + tooltip_data.electoralVotes;
-    text += "<ul>"
-    tooltip_data.result.forEach(function (row) {
-        text += "<li class = class-list>" + row.name + ":\t\t" + row.students + "(" + row.day + "%)" + row.time + "</li>"
-    });
-    text += "</ul>";
-    return text;
-}
+
+var Tooltip = d3.select("#tooltip")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+
+var myColor = d3.scaleSequential().domain([0, 250])
+    .interpolator(d3.interpolateLab("blue", "red"));
 
 
-function updateMap(classData) {
+function updateMap(classData, Day, Time) {
+
     d3.json("data/svgPaths.json").then(function (svgPaths) {
+        var currDay = d3.select("#selected-day").property("value")
+        var currTime = d3.select("#time_range").property("value")
 
-        console.log(svgPaths)
+        currClassArr = []
+        classData.forEach(function (c) {
+            if (c.day == currDay && c.time == currTime) {
+                currClassArr.push(c)
+            }
+        })
 
         grassGroup.selectAll("path")
             .data(svgPaths.grassPaths)
@@ -31,7 +40,7 @@ function updateMap(classData) {
             .append("path")
             .attr("d", function (d) { return d.d })
             .attr("class", "grass")
-            .style("fill", "#2B790F")
+            .style("fill", "#8DB47C")
 
 
         parkingGroup.selectAll("path")
@@ -40,8 +49,9 @@ function updateMap(classData) {
             .append("path")
             .attr("d", function (d) { return d.d })
             .attr("class", "parking")
-            .style("fill", "#C9A8FF")
+            .style("fill", "#CED6DC")
             .style("stroke", "black")
+            .style("stroke-width", 0.3)
 
 
 
@@ -51,57 +61,67 @@ function updateMap(classData) {
             .append("path")
             .attr("d", function (d) { return d.d })
             .attr("class", "otherBuildings")
-            .style("fill", "#FF7675")
+            .style("fill", "gray")
             .style("stroke", "black")
 
 
-        var Tooltip = d3.select("#tooltip")
-            .append("div")
-            .style("opacity", 0)
-            .attr("class", "tooltip")
-            .style("background-color", "white")
-            .style("border", "solid")
-            .style("border-width", "2px")
-            .style("border-radius", "5px")
-            .style("padding", "5px")
+
 
         var mouseover = function (d) {
             Tooltip
                 .style("opacity", 1)
-            // d3.select(this)
-            //     .style("stroke", "black")
-            //     .style("opacity", 1)
         }
+
         var mousemove = function (d) {
+            var currBuilding = d.target.__data__.id
+
+            currDay = d3.select("#selected-day").property("value")
+            currTime = d3.select("#time_range").property("value")
+
             Tooltip
                 .html(function (d) {
-                    currClassArr = []
-                    classData.forEach(function (c) {
-                        if (c.building == d.building) {
-                            //   text = text + "name: " + 3
-                            currClassArr.push(c)
-                        }
-                    })
-
-
-                    var text = "Building: " + d.building + "<hr>"
+                    var text = "Building: " + currBuilding + " " + currDay + ", " + currTime + "<hr>"
                     text += "Classes: <br>"
-                    text += "<ul>";
-                    currClassArr.forEach(function (c) {
-                        if (c.building == d.building) {
-                            text = text + "<li> name: " + c.name + ", Professor: " + c.professor + ", Enrolled: " + c.enrolled + "</li>"
-                        }
-                    })
-                    text += "</ul>";
+                    if (currClassArr.length == 0) {
+                        text += "NONE"
+                    }
+                    else {
+                        text += "<ul>";
+                        currClassArr.forEach(function (c) {
+                            if (c.building == currBuilding) {
+                                text = text + "<li> name: " + c.class_name + ", Professor:" + c.proff + ", Enrolled:" + c.num + "</li>"
+                            }
+                        })
+                        text += "</ul>";
+                    }
+
                     return text;
                 })
+                .style("left", (d.screenX + 70) + "px")
+                .style("top", (d.screenY) + "px")
+
+            d3.select(this)
+                .style("fill", "#CE4545")
         }
+
+
         var mouseleave = function (d) {
             Tooltip
                 .style("opacity", 0)
-            // d3.select(this)
-            //     .style("stroke", "none")
-            //     .style("opacity", 0.8)
+
+            d3.select(this)
+                .style("fill", function (d) {
+                    totalStudents = 0
+                    currClassArr.forEach(function (c) {
+
+                        if (c.building == d.id) {
+                            totalStudents += c.num
+                        }
+                    })
+
+
+                    return myColor(totalStudents)
+                })
         }
 
 
@@ -111,40 +131,25 @@ function updateMap(classData) {
             .append("path")
             .attr("d", function (d) { return d.d })
             .attr("class", function (d) { return d.id })
-            .style("fill", "#FF7675")
+            .style("fill", function (d) {
+                totalStudents = 0
+                currClassArr.forEach(function (c) {
+
+                    if (c.building == d.id) {
+                        totalStudents += c.num
+                    }
+                })
+
+                return myColor(totalStudents)
+            })
             .style("stroke", "black")
-            .style("fillrule", function (d) { return d.fillrule })
-            .on("mouseover", function (d) {
-                d3.select(this)
-                    .style("fill", "#CE4545")
-                console.log(this)
-            })
-            .on("mouseout", function () {
-                d3.select(this)
-                    .style("fill", "#FF7675")
-            })
-        // .on("mousemove", mousemove)
-        // .on("mouseleave", mouseleave)
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave)
 
     })
 }
 
-// function updateMap(data) {
-//     console.log("asd")
-//     console.log(data)
-
-
-//     classroomBuildingGroup.selectAll("path")
-//         .data(svgPaths.classroomBuildingPaths)
-//         .enter()
-//         .append("path")
-//         .attr("d", function (d) { return d.d })
-//         .attr("class", function (d) { return d.id })
-//         .style("fill", "#CE4545")
-//         .style("stroke", "black")
-//         .style("fillrule", function (d) { return d.fillrule })
-
-// }
 
 
 

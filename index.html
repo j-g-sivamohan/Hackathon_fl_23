@@ -11,7 +11,7 @@
         <form class="form-inline">
             <div class="form-group">
                 <label for="selected-day">Select Day</label>
-                <select class="form-control" id="selected-day" onchange="callQuery()">
+                <select class="form-control" id="selected-day" onchange="setValues()">
                     <option value="M">Monday</option>
                     <option value="T">Tuesday</option>
                     <option value="W">Wednesday</option>
@@ -26,7 +26,8 @@
             <span id="slider_value" style="color:rgb(0, 0, 0);"></span>
             <br>
             <input type="range" min="9" max="17" value="12" class="slider" id="time_range"
-                onchange="updateTime()">
+                onchange="setValues()">
+            <span id="slider_value" style="color:rgb(130, 10, 10);"></span>
         </div>
 
 <datalist id="markers">
