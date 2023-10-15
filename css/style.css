@@ -1,0 +1,57 @@
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 0%;
+    vertical-align: top;
+    outline: black 3px solid;
+}
+
+
+#user-query{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 2%;
+    margin-top: 1%;
+}
+
+/* .form-inline {
+    margin: 30px;
+} */
+
+.form-control {
+    background: #E2DDD1;
+    border: 1px solid #D49999;
+    /* width: 25%; */
+}
+/*
+.form-group label {
+    font-weight: 400;
+    margin-right: 10px;
+}
+
+.form-inline button,
+.btn-link:active {
+    border-left: 1px solid #888;
+    margin-left: 15px;
+    padding-left: 15px;
+    color: #333;
+    cursor: pointer;
+    outline: none;
+}
+
+.form-inline button:hover,
+.btn-link:active,
+.btn-link:focus {
+    border-left: 1px solid #888;
+    color: #8E7060;
+    text-decoration: none;
+    outline: none;
+}
+
+.form-inline button .glyphicon {
+    margin-right: 5px;
+} */
