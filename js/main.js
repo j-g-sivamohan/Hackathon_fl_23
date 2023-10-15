@@ -1,30 +1,46 @@
 var selectedDay = "M"
 var selectedTime= 9
 
-const { time } = require("console");
-const http = require("http"),
-    fs = require("fs");
-const port = 8000;
-const file = "heat_map.html";
-//CHANGE THIS BACK LATER!!!!
 
-var mysql = require('mysql');
+// displayMap()
+loadData()
 
-console.log("hello")
-var con = mysql.createConnection({ 
-    host: "localhost",
-    user: "root",
-    password: "root123",
-    database: "heat_map"
-  });
+Object.defineProperty(window, 'data', {
+	get: function () { return _data; },
+	set: function (value) {
+		_data = value;
+		updateMap(data)
+	}
+});
 
-con.connect();
+function loadData() {
+	d3.csv("data/indiv_classes.txt").then(function (csv) {
+        csv.forEach(function (d) {
+			d.time = +d.time;
+			d.enrolled = +d.enrolled;
+            d.waits = +d.waits;
+		});
+
+		data = csv;
+	});
+
+}
 
 function setValues() {
     selectedDay = d3.select("#selected-day").property("value")
     selectedTime = d3.select("#time_range").property("value")
     console.log(selectedDay + " " + selectedTime)
 
-    callQuery(selectedDay, selectedTime)
+    var filteredData = []
+
+    data.forEach(function(d){
+        if (d.day == selectedDay && d.time == selectedTime){
+            filteredData.push(d)
+        }
+    })
+
+    console.log(filteredData)
+
+    // updateMap(filteredData)
 }
 console.log("hello")

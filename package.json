@@ -1,11 +1,6 @@
 {
   "dependencies": {
-    "console": "^0.7.2",
-    "d3": "^7.8.5",
-    "fs": "^0.0.1-security",
-    "http": "^0.0.1-security",
     "mysql": "^2.18.1",
-    "node-fetch": "^3.3.2",
-    "socket.io": "^4.7.2"
+    "require": "^2.4.20"
   }
 }
