@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+<title>Heat Map</title>
+<style>
+body, html {
+    overflow: hidden;
+    background-image: url("https://wustl.edu/wp-content/uploads/2022/01/danforth-map-2022.png");
+    background-size: 1100px 1100px;
+
+  background-repeat: no-repeat;
+  /* background-size: cover; */
+}
+#circle2 {
+    /* transform: translateY(130px); */
+    background: #f00;
+    right:50px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+.slider {
+  width: 400px;
+  height: 15px;
+  border-radius: 5px; 
+}
+
+</style>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+    var showFood = false;
+    var showClass = true;
+    var day = 'M';
+    var day_abrev = "Monday"
+    var time = 12;
+    var num_students_arr = [];
+    var food_pop_arr = [];
+    var foodList = []
+    var buildingList = [];
+
+    var socketio = io.connect();
+
+
+    socketio.on("map_update", function(data){
+        num_students_arr = data["nums"];
+        //alert(num_students_arr);
+        updateHeat(num_students_arr);
+      })
+
+      socketio.on("food_map_update", function(data){
+        food_pop_arr = data["nums"];
+        //alert(num_students_arr);
+        updateFood(food_pop_arr);
+      })
+
+    function show_value(val){
+        time = val;
+        document.getElementById('slider_value').innerHTML = day_abrev +" " +val + ":00";
+        updateAll();
+    }
+
+    function toggleEat(val){
+        if(val == 'true'){
+            showFood = true;
+            // $("#eatOn").hide();
+            // $("#eatOff").show();
+        }
+        else{
+            showFood = false;
+            // $("#eatOn").show();
+            // $("#eatOff").hide();
+        }
+        updateAll();
+    }
+
+    function toggleClass(val){
+        if(val == 'true'){
+            showClass = true;
+            // $("#eatOn").hide();
+            // $("#eatOff").show();
+        }
+        else{
+            showClass = false;
+            // $("#eatOn").show();
+            // $("#eatOff").hide();
+        }
+        updateAll();
+    }
+
+
+    function setDay(val){
+        day = val;
+        if(day =='M'){
+            day_abrev = "Monday"
+        }
+        if(day =='T'){
+            day_abrev = "Tuesday"
+        }
+        if(day =='W'){
+            day_abrev = "Wednesday"
+        }
+        if(day =='H'){
+            day_abrev = "Thursday"
+        }
+        if(day =='F'){
+            day_abrev = "Friday"
+        }
+        document.getElementById('slider_value').innerHTML = day_abrev +" " +time + ":00";
+        updateAll();
+    }
+
+    function giveCoords(){
+        //alert(event.clientX + ", " + event.clientY)
+        var yCoord = event.clientY;
+        var xCoord = event.clientX;
+        if(yCoord > 755 || yCoord < 140 || xCoord < 120 || xCoord > 1030){
+            return;
+        }
+        if(showClass){
+            for(var i = 0 ; i < buildingList.length; ++i){
+                if(yCoord > buildingList[i].yVal - buildingList[i].radius && yCoord < buildingList[i].yVal + buildingList[i].radius){
+                    if(xCoord > buildingList[i].xVal - buildingList[i].radius && xCoord < buildingList[i].xVal + buildingList[i].radius){
+                        alert(buildingList[i].Name + ": " + (num_students_arr[i] - 1) + " students at this time.");
+                        return;
+                    }
+                }
+            }
+        }
+        if(showFood){
+            for(var i = 0 ; i < foodList.length; ++i){
+                if(yCoord > foodList[i].yVal - foodList[i].radius && yCoord < foodList[i].yVal + foodList[i].radius){
+                    if(xCoord > foodList[i].xVal - foodList[i].radius && xCoord < foodList[i].xVal + foodList[i].radius){
+                        alert(foodList[i].Name + " has a busy metric of " + food_pop_arr[i] + "  at this time.");
+                        return;
+                    }
+                }
+            }
+        }
+        socketio.emit("clicked", {xVal:event.clientX, yVal:event.clientY + 60});
+    }
+    function updatePoints(day, time){
+        
+        
+            socketio.emit("update_server", {day:day, time:time});
+        
+        if(time >= 10 && showFood){
+            socketio.emit("update_server_food", {day:day, time:time});
+        }
+    }
+    
+
+    function updateAll(){
+        updatePoints(day, time);
+    }
+
+    updateAll();
+    
+
+</script>
+
+
+<script>
+
+</script>
+
+
+
+
+</head>
+<body onclick="giveCoords()">
+
+
+
+    
+
+    <canvas id="myCanvas" width=1100 height=700>
+        
+    </canvas>
+
+    
+
+    <div class = "radio">
+        <button type="button" onclick = setDay(this.value) id = "M_button" value='M'>
+            Monday
+          </button>
+          <button type="button" onclick = setDay(this.value) id = "T_button" value='T'>
+            Tuesday
+          </button>
+          <button type="button" onclick = setDay(this.value) id = "W_button" value='W'>
+            Wednesday
+          </button>
+          <button type="button" onclick = setDay(this.value) id = "H_button" value='H'>
+            Thursday
+          </button>
+          <button type="button" onclick = setDay(this.value) id = "F_button" value='F'>
+            Friday
+          </button>
+    </div>
+       
+
+    <div class="slidecontainer">
+    <input type="range" min="9" max="17" value="12" class="slider" id="time_range" onchange= "show_value(this.value)">
+    <span id="slider_value" style="color:rgb(130, 10, 10);"></span>
+      </div>
+      
+      <button type="button" onclick = toggleEat(this.value) id = "eatOn" value= true>
+        Food On 
+      </button>
+      <button type="button" onclick = toggleEat(this.value) id = "eatOff" value= false>
+        Food Off
+      </button>
+      <br>
+
+      <button type="button" onclick = toggleClass(this.value) id = "classOn" value='true'>
+        Class On  
+      </button>
+      <button type="button" onclick = toggleClass(this.value) id = "classOff" value='false'>
+        Class Off
+      </button>
+    
+    <script>
+        var shift = 0;
+        
+
+        foodList.push({Name: "Hillman Food", xVal:817, yVal:562 + shift, radius:15})
+        foodList.push({Name: "DUC", xVal:439, yVal:499+ shift, radius:15})
+        foodList.push({Name: "Subway", xVal:517, yVal:499+ shift, radius:15})
+        foodList.push({Name: "Parkside", xVal:856, yVal:442+ shift, radius:15})
+        foodList.push({Name: "Whispers", xVal:622, yVal:448+ shift, radius:15})
+        foodList.push({Name: "Stanleys", xVal:723, yVal:366+ shift, radius:15})
+        foodList.push({Name: "Law Cafe", xVal:392, yVal:347+ shift, radius:15})
+        foodList.push({Name: "Bytes", xVal:991, yVal:463+ shift, radius:15})
+        
+        buildingList.push({Name:"AB Law Bldg", xVal:331, yVal:337+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Academy Bldg", xVal:638, yVal:266+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Athletic Complx", xVal:162, yVal:331+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Bauer", xVal:470, yVal:346+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Bixby", xVal:967, yVal:596+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Brauer Hall", xVal:958, yVal:399+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Brown", xVal:735, yVal:560+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Busch", xVal:735, yVal:520+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Busch Lab", xVal:553, yVal:500+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Crow", xVal:763, yVal:395+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Cupples I", xVal:749, yVal:424+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Cupples II", xVal:663, yVal:383+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Danforth Ctr", xVal:432, yVal:487+ shift, isFood:true, radius:15})
+        buildingList.push({Name:"Duncker", xVal:703, yVal:433+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Eads", xVal:659, yVal:462+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Gaylord", xVal:387, yVal:610+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Givens", xVal:875, yVal:585+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Green Hall", xVal:1009, yVal:404+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Hillman", xVal:800, yVal:575+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"January Hall", xVal:692, yVal:498+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Jolley", xVal:680, yVal:356+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Jubel", xVal:900, yVal:440+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Kemper", xVal:932, yVal:547+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Life Sciences", xVal:551, yVal:520+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Lopata Hall", xVal:708, yVal:388+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Lopata House", xVal:169, yVal:217+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Louderman", xVal:604, yVal:367+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Mallinckrodt", xVal:478, yVal:524+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"McDonnell", xVal:676, yVal:543+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"McMillan", xVal:467, yVal:329+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Music Cls Bldg", xVal:365, yVal:595+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Rebstock", xVal:586, yVal:507+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Ridgley", xVal:707, yVal:468+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Rudolph", xVal:810, yVal:387+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"S40 Lien", xVal:260, yVal:675+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Schnuck Pav", xVal:857, yVal:445+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Seigle", xVal:304, yVal:397+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Sever", xVal:694, yVal:410+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Simon", xVal:373, yVal:472+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Somers Family", xVal:619, yVal:558+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Steinberg", xVal:922, yVal:593+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Stix", xVal:469, yVal:613+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Sumers Rec Ctr", xVal:149, yVal:383+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Tietjens Hall", xVal:343, yVal:604+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Umrath", xVal:471, yVal:480+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Urbauer", xVal:713, yVal:365+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Village House", xVal:1330, yVal:555+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Walker Hall", xVal:972, yVal:571+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Weil", xVal:885, yVal:551+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Whitaker", xVal:894, yVal:386+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Wilson", xVal:655, yVal:515+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Wom Bldg", xVal:563, yVal:386+ shift, isFood:false, radius:15})
+        buildingList.push({Name:"Wrighton", xVal:521, yVal:351+ shift, isFood:false, radius:15})
+       
+
+    </script>
+    <script>
+
+    function testClick(){
+        alert(document.getElementById('time_range').value);
+    }
+
+    function updateHeat(data){
+
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        ctx.clearRect(0, 0, 1100, 1150);
+
+        if(!showClass){
+            return;
+        }
+        for(var i = 0; i < buildingList.length; ++i){
+            var radius = 30;
+            
+            //ctx.stroke(); // remove to get rid of borders
+            var level = Math.log2(num_students_arr[i]);
+            if(level > 10){
+                level = 10;
+            }
+            var red = 175;
+            var green = 253;
+            var blue = 17;
+            if(level <= 2.5){
+                red += level * 32;
+            }
+            else{
+                red = 255;
+                green -= ((level - 2.5) * 32);
+            }
+            
+            radius = Math.floor(level * 1.5+ 15);
+            buildingList[i].radius = radius;
+            ctx.beginPath();
+            ctx.arc(buildingList[i].xVal - radius/2,buildingList[i].yVal - radius/2,radius,0,2*Math.PI);
+            var redVal = Math.floor(red).toString(16);
+            var greenVal = Math.floor(green).toString(16);
+            var blueVal = Math.floor(blue).toString(16);
+            if(redVal.length < 2){
+                redVal = '0' + redVal;
+            }
+            if(greenVal.length < 2){
+                greenVal = '0' + greenVal;
+            }
+            if(blueVal.length < 2){
+                blueVal = '0' + blueVal;
+            }
+            var color = "#" +redVal + greenVal + blueVal + "80";
+
+            ctx.fillStyle = color;
+            ctx.fill();
+
+        } 
+    }
+    function updateFood(data){
+
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+for(var i = 0; i < foodList.length; ++i){
+    var radius = 30;
+    
+    //ctx.stroke(); // remove to get rid of borders
+    var level = (food_pop_arr[i])/20;
+    if(level > 10){
+        level = 10;
+    }
+    var red = 17;
+    var green = 253;
+    var blue = 175;
+    if(level <= 2.5){
+        blue += level * 32;
+    }
+    else{
+        blue = 255;
+        green -= ((level - 2.5) * 32);
+    }
+    
+    radius = Math.floor(level * 1.5+ 15);
+    foodList[i].radius = radius;
+    ctx.beginPath();
+    ctx.arc(foodList[i].xVal - radius/2,foodList[i].yVal - radius/2,radius,0,2*Math.PI);
+    var redVal = Math.floor(red).toString(16)
+    var greenVal = Math.floor(green).toString(16)
+    var blueVal = Math.floor(blue).toString(16)
+    if(redVal.length < 2){
+        redVal = '0' + redVal
+    }
+    if(greenVal.length < 2){
+        greenVal = '0' + greenVal
+    }
+    if(blueVal.length < 2){
+        blueVal = '0' + blueVal
+    }
+    var color = "#" +redVal + greenVal + blueVal + "80";
+    ctx.fillStyle = color;
+    ctx.fill();
+
+} 
+}
+
+    $(document).ready(function(){
+        updatePoints('M', 9);
+        
+        
+    });
+    document.getElementById('slider_value').innerHTML = day_abrev +" " +time + ":00";
+        </script> 
+
+
+
+
+</body>
+</html>
