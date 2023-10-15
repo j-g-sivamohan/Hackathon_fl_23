@@ -1,7 +1,20 @@
+.title{
+    /* align-text: center; */
+    /* align-self: center; */
+    margin-top: 1%;
+    margin-bottom: 1%;
+    padding: 1%;
+    text-align: center;
+    background-color: #D49999;
+    font-size: 30px;
+}
+
+
+
 .svg-container {
     display: inline-block;
     position: relative;
-    width: 100%;
+    width: 70%;
     padding-bottom: 0%;
     vertical-align: top;
     outline: black 3px solid;
@@ -12,6 +25,7 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    text-align: center;
     margin-left: 10%;
     margin-right: 10%;
     margin-bottom: 2%;
@@ -22,4 +36,27 @@
 .form-control {
     background: #E2DDD1;
     border: 1px solid #D49999;
+}
+
+#tooltip{
+    background-color: white;
+    border: black 3px solid;
+    /* padding: 2%; */
+    width:30%;
+}
+
+.display-map{
+    display:flex;
+    align-items: flex-start;
+}
+
+.buildingText{
+    text-align: center;
+    font-size: 30px;
+    margin: 0%;
+}
+
+.subtext{
+    text-align: center;
+    font-size: 14px;
 }

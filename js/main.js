@@ -14,7 +14,7 @@ Object.defineProperty(window, 'data', {
 });
 
 function loadData() {
-	d3.csv("data/classesFilled.csv").then(function (csv) {
+	d3.csv("data/classesFilledFinalFixed.csv").then(function (csv) {
         csv.forEach(function (d) {
 			d.time = +d.time;
 			d.num = +d.num;
@@ -29,6 +29,7 @@ function loadData() {
 }
 
 function setValues() {
+    
     selectedDay = d3.select("#selected-day").property("value")
     selectedTime = d3.select("#time_range").property("value")
     console.log(selectedDay + " " + selectedTime)
@@ -40,8 +41,6 @@ function setValues() {
             filteredData.push(d)
         }
     })
-
-    // console.log(filteredData)
 
     updateMap(filteredData, selectedDay, selectedTime)
 }

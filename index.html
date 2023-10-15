@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html lang="en">
+
 <head>
-	<title>Campus Map</title>
+    <title>Campus Map</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script type="text/javascript" src="bower_components/d3-tip/index.js"></script>
 </head>
+
 <body>
+    <div class="title"><b>CAMPUS CARTOGRAPHER</b></div>
     <div id="user-query">
         <form class="form-inline">
             <div class="form-group">
@@ -25,33 +28,35 @@
             Time:
             <span id="slider_value" style="color:rgb(0, 0, 0);"></span>
             <br>
-            <input type="range" min="9" max="17" value="12" class="slider" id="time_range"
-                onchange="setValues()">
+            <input type="range" min="9" max="17" value="12" class="slider" id="time_range" onchange="setValues()">
             <span id="slider_value" style="color:rgb(130, 10, 10);"></span>
         </div>
 
-<datalist id="markers">
-    <option value="0"></option>
-    <option value="25"></option>
-    <option value="50"></option>
-    <option value="75"></option>
-    <option value="100"></option>
-  </datalist>
-  
+        <datalist id="markers">
+            <option value="0"></option>
+            <option value="25"></option>
+            <option value="50"></option>
+            <option value="75"></option>
+            <option value="100"></option>
+        </datalist>
+
     </div>
-    <div id="campus-map" class="svg-container"></div>
-    <div id = "tooltip" class = "view"></div>
+    <div class="display-map">
+        <div id="campus-map" class="svg-container"></div>
+        <div id="tooltip" class="view"></div>
+    </div>
 
     <script>
-    var slider = document.getElementById("time_range");
+        var slider = document.getElementById("time_range");
         var sliderValue = document.getElementById("slider_value");
-        
+
         // Display the initial value
         sliderValue.innerHTML = slider.value;
-        
+
         // Update the displayed value when the slider value changes
-        slider.oninput = function() {
-          sliderValue.innerHTML = this.value;};
+        slider.oninput = function () {
+            sliderValue.innerHTML = this.value;
+        };
     </script>
 
     <script src="js/jquery.min.js"></script>
@@ -62,5 +67,5 @@
     <script src="js/query.js"></script>
     <script src="js/main.js"></script>
 </body>
-</html>
 
+</html>
