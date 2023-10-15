@@ -1,9 +1,6 @@
-var width = 1440,
-    height = 257;
-
-var svg = d3.select("#campus-map").append("svg")
-    .attr("width", width)
-    .attr("height", height)
+var svg = d3.select("#campus-map")
+    .append("svg")
+    .attr("viewBox", "0 0 887 257")
 
 
 d3.json("data/svgPaths.json").then(function (svgPaths) {
@@ -50,6 +47,11 @@ d3.json("data/svgPaths.json").then(function (svgPaths) {
         .style("stroke", "black")
         .style("fillrule", function(d) {return d.fillrule})
 })
+
+
+function updateMap(){
+    console.log("update map")
+}
 
 
 

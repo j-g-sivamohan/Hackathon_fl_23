@@ -2,14 +2,40 @@
 <html lang = "en">
 <head>
 	<title>Campus Map</title>
-	<link rel = "stylesheet" type = "text/css" href = "styling.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="user-input"></div>
-    <div id="campus-map"></div>
+    <div id="user-query">
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="selected-day">Select Day</label>
+                <select class="form-control" id="selected-day" onchange="setValues()">
+                    <option value="M">Monday</option>
+                    <option value="T">Tuesday</option>
+                    <option value="W">Wednesday</option>
+                    <option value="R">Thursday</option>
+                    <option value="F">Friday</option>
+                </select>
+            </div>
+        </form>
 
+        <div class="slidecontainer">
+            <input type="range" min="9" max="17" value="12" class="slider" id="time_range"
+                onchange="setValues()">
+            <span id="slider_value" style="color:rgb(130, 10, 10);"></span>
+        </div>
+    </div>
+    <div id="campus-map" class="svg-container"></div>
+
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="https://d3js.org/d3.v7.js"></script>
     <script src="js/campus-map.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/query.js"></script>
 </body>
 </html>
 
