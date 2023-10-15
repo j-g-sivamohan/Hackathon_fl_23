@@ -28,7 +28,7 @@ function convertDay(day, time) {
     else if (day == "W") {
         dString = "Wednsday"
     }
-    else if (day == "R") {
+    else if (day == "H") {
         dString = "Thursday"
     }
     else if (day == "F") {
