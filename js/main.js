@@ -9,19 +9,21 @@ Object.defineProperty(window, 'data', {
 	get: function () { return _data; },
 	set: function (value) {
 		_data = value;
-		updateMap(data)
+		updateMap(data, selectedDay, selectedTime)
 	}
 });
 
 function loadData() {
-	d3.csv("data/indiv_classes.txt").then(function (csv) {
+	d3.csv("data/classesFilled.csv").then(function (csv) {
         csv.forEach(function (d) {
 			d.time = +d.time;
-			d.enrolled = +d.enrolled;
-            d.waits = +d.waits;
+			d.num = +d.num;
+            d.waits = +d.waits
+            d.friends = +d.friends
 		});
 
 		data = csv;
+        console.log(data)
 	});
 
 }
@@ -39,8 +41,7 @@ function setValues() {
         }
     })
 
-    console.log(filteredData)
+    // console.log(filteredData)
 
-    // updateMap(filteredData)
+    updateMap(filteredData, selectedDay, selectedTime)
 }
-console.log("hello")
