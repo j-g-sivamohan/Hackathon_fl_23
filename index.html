@@ -22,14 +22,36 @@
         </form>
 
         <div class="slidecontainer">
+            Time:
+            <span id="slider_value" style="color:rgb(0, 0, 0);"></span>
+            <br>
             <input type="range" min="9" max="17" value="12" class="slider" id="time_range"
                 onchange="updateTime()">
-            <span id="slider_value" style="color:rgb(130, 10, 10);"></span>
         </div>
+
+<datalist id="markers">
+    <option value="0"></option>
+    <option value="25"></option>
+    <option value="50"></option>
+    <option value="75"></option>
+    <option value="100"></option>
+  </datalist>
+  
     </div>
     <div id="campus-map" class="svg-container"></div>
     <div id = "tooltip" class = "view"></div>
 
+    <script>
+    var slider = document.getElementById("time_range");
+        var sliderValue = document.getElementById("slider_value");
+        
+        // Display the initial value
+        sliderValue.innerHTML = slider.value;
+        
+        // Update the displayed value when the slider value changes
+        slider.oninput = function() {
+          sliderValue.innerHTML = this.value;};
+    </script>
 
     <script src="js/jquery.min.js"></script>
     <script src="js/popper.min.js"></script>
