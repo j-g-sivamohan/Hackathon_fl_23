@@ -1,3 +1,4 @@
+
 var svg = d3.select("#campus-map")
     .append("svg")
     .attr("viewBox", "0 0 887 257")
@@ -49,8 +50,9 @@ d3.json("data/svgPaths.json").then(function (svgPaths) {
 })
 
 
-function updateMap(){
+function updateMap(data){
     console.log("update map")
+    console.log(data)
 }
 
 

@@ -8,14 +8,15 @@ const file = "heat_map.html";
 
 var mysql = require('mysql');
 
-
+console.log("hello")
 var con = mysql.createConnection({ 
     host: "localhost",
     user: "root",
     password: "root123",
     database: "heat_map"
   });
-g
+
+console.log("h2")
 // const {createPool} = require('mysql');
 
 // const pool = createPool({
@@ -31,7 +32,7 @@ g
 con.connect();
 
 
-
+console.log("h3")
 
 
 // Listen for HTTP connections.  This is essentially a miniature static file server that only serves our one file, client.html, on port 3456:
@@ -55,6 +56,7 @@ const socketio = require("socket.io")(http, {
 });
 
 // Attach our Socket.IO server to our HTTP server to listen
+console.log("h4")
 const io = socketio.listen(server);
 
 
@@ -83,7 +85,7 @@ io.sockets.on("connection", function (socket) {
 
         con.query(statement2, function(err, rows, fields) {
             if(err) console.log(err);
-            console.log(rows);
+            //console.log(rows);
             // for(var i = 0; i < 53; ++i){
             //     hold = rows[i].num_students;
             //     new_nums.push(hold + 1);
@@ -96,8 +98,11 @@ io.sockets.on("connection", function (socket) {
         con.query(statement, function(err, rows, fields) {
             if(err) console.log(err);
             for(var i = 0; i < 53; ++i){
+
                 hold = rows[i].num_students;
-                new_nums.push(hold + 1);
+                if(hold > 0){
+                    new_nums.push(hold + 1);
+                }
             }
             //console.log(new_nums);
             socket.emit('map_update', {nums:new_nums});
